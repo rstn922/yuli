@@ -1,0 +1,233 @@
+/* ==========================================================================
+   YULI Intro — Photo Flash (halftone + glitch) → Elegant Name Reveal
+   Perf: pre-decoded stacked layers, compositor-only (opacity/transform/clip-path)
+   ========================================================================== */
+html.intro-seen #intro { display: none; }
+html.intro-active body { overflow: hidden; }
+
+#intro {
+  --w: min(54vw, 280px);
+  --h: min(72vw, 373px);
+  --cover: 4;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #0c0c0f;
+  color: #fff;
+  overflow: hidden;
+  contain: strict;
+  transition: opacity 0.75s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#intro.is-leaving { opacity: 0; transform: scale(1.06); pointer-events: none; will-change: opacity, transform; }
+
+/* Full-screen frame clipped to a centred 3:4 film window, then unclipped */
+.intro-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.92);
+  clip-path: inset(calc(50% - var(--h) / 2) calc(50% - var(--w) / 2) round 4px);
+  will-change: clip-path, transform, opacity;
+  transition:
+    clip-path 1s cubic-bezier(0.7, 0, 0.2, 1),
+    opacity 0.35s ease,
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+#intro.is-flashing .intro-frame { opacity: 1; transform: none; }
+#intro.is-expanded .intro-frame { clip-path: inset(0 round 0); }
+
+/* Every photo is its own pre-decoded layer, sized to the 3:4 window */
+.intro-layer,
+.intro-dots {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--w);
+  height: var(--h);
+  margin: calc(var(--h) / -2) 0 0 calc(var(--w) / -2);
+}
+.intro-layer {
+  object-fit: cover;
+  object-position: 50% 36%;
+  opacity: 0;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+.intro-layer.on { opacity: 1; }
+.intro-ghost { mix-blend-mode: screen; pointer-events: none; }
+
+/* Halftone frame */
+.intro-frame.fx-halftone .intro-layer.on { filter: grayscale(1) contrast(1.7) brightness(1.08); }
+.intro-dots {
+  z-index: 2;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(12, 12, 15, 0.9) 0.9px, transparent 1.5px) 0 0 / 4px 4px;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+.intro-frame.fx-halftone .intro-dots { opacity: 1; }
+
+/* Glitch frame: RGB split + slice jitter */
+.intro-frame.fx-glitch .intro-shot.on { animation: introJitter 0.15s steps(2) both; }
+.intro-frame.fx-glitch .intro-ghost.g-r.on {
+  opacity: 0.7;
+  filter: sepia(1) saturate(7) hue-rotate(-38deg) brightness(0.85);
+  transform: translate3d(-6px, 0, 0);
+}
+.intro-frame.fx-glitch .intro-ghost.g-c.on {
+  opacity: 0.7;
+  filter: sepia(1) saturate(4) hue-rotate(145deg) brightness(0.9);
+  transform: translate3d(6px, 2px, 0);
+  animation: introSlice 0.15s steps(2) both;
+}
+
+@keyframes introJitter {
+  0% { transform: translate3d(4px, -2px, 0) scale(1.04); }
+  100% { transform: translate3d(-3px, 1px, 0) scale(1.02); }
+}
+@keyframes introSlice {
+  0% { clip-path: inset(18% 0 52% 0); }
+  50% { clip-path: inset(62% 0 14% 0); }
+  100% { clip-path: inset(36% 0 40% 0); }
+}
+
+/* Final shot: rendered at full cover size and scaled DOWN into the window (stays crisp),
+   then expands with transform only and slowly settles */
+.intro-final {
+  width: calc(var(--w) * var(--cover));
+  height: calc(var(--h) * var(--cover));
+  margin: calc(var(--h) * var(--cover) / -2) 0 0 calc(var(--w) * var(--cover) / -2);
+  transform: scale(calc(1 / var(--cover)));
+  will-change: transform;
+}
+#intro.is-expanded .intro-final {
+  transform: scale(1.08);
+  transition: transform 1s cubic-bezier(0.7, 0, 0.2, 1);
+}
+#intro.is-expanded.is-titled .intro-final {
+  transform: scale(1);
+  transition: transform 3.2s ease-out;
+}
+
+/* Darkening veil (opacity instead of animating a full-screen filter) */
+.intro-shade {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+#intro.is-expanded .intro-shade { opacity: 0.5; }
+
+/* Film counter */
+.intro-counter {
+  position: absolute;
+  bottom: max(26px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.32em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(255, 255, 255, 0.55);
+  z-index: 4;
+  transition: opacity 0.4s ease;
+}
+#intro.is-expanded .intro-counter { opacity: 0; }
+
+/* Title block */
+.intro-title {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.intro-name {
+  display: flex;
+  gap: 0.04em;
+  font-family: var(--font-masthead);
+  font-weight: 800;
+  font-size: clamp(4.2rem, 17vw, 10rem);
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+.intro-name span {
+  display: inline-block;
+  opacity: 0;
+  transform: translate3d(0, 0.35em, 0);
+  filter: blur(8px);
+  will-change: transform, opacity, filter;
+  transition: opacity 0.7s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s ease;
+}
+.intro-rule {
+  width: min(180px, 40vw);
+  height: 1px;
+  margin: 18px 0 14px;
+  background: rgba(255, 255, 255, 0.7);
+  transform: scaleX(0);
+  transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.5s;
+}
+.intro-sub,
+.intro-meta {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition: opacity 0.7s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.intro-sub {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.15rem, 4.4vw, 1.7rem);
+  transition-delay: 0.65s;
+}
+.intro-meta {
+  margin-top: 8px;
+  font-family: var(--font-ui);
+  font-size: 0.68rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  transition-delay: 0.85s;
+}
+#intro.is-titled .intro-name span { opacity: 1; transform: none; filter: blur(0); }
+#intro.is-titled .intro-rule { transform: scaleX(1); }
+#intro.is-titled .intro-sub,
+#intro.is-titled .intro-meta { opacity: 1; transform: none; }
+
+/* Skip */
+.intro-skip {
+  position: absolute;
+  top: max(18px, env(safe-area-inset-top));
+  right: 18px;
+  z-index: 6;
+  padding: 7px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.82);
+  font-family: var(--font-ui);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.intro-skip:hover { background: rgba(255, 255, 255, 0.16); }
+
+/* Main page entrance after intro (opacity/transform only) */
+.app-shell.intro-reveal { animation: introAppIn 1.1s cubic-bezier(0.16, 1, 0.3, 1) both; will-change: opacity, transform; }
+@keyframes introAppIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-frame.fx-glitch .intro-layer.on { animation: none; }
+}

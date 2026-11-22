@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>YULIS Feed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;0,6..96,800;1,6..96,400;1,6..96,500&family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="intro.css" />
+  <script>try{if(sessionStorage.getItem('yuliIntroSeen'))document.documentElement.classList.add('intro-seen')}catch(e){}</script>
+</head>
+<body>
+  <!-- Intro: photo flash (halftone + glitch) → YULI name reveal -->
+  <div id="intro" aria-label="Intro YULIS Feed">
+    <div class="intro-frame"></div>
+    <span class="intro-counter">00 / 19</span>
+    <div class="intro-title">
+      <div class="intro-name" aria-label="YULI">
+        <span style="transition-delay:0s">Y</span><span style="transition-delay:0.1s">U</span><span style="transition-delay:0.2s">L</span><span style="transition-delay:0.3s">I</span>
+      </div>
+      <div class="intro-rule"></div>
+      <div class="intro-sub">Yulie Aisyah Binrany, S.Pd</div>
+      <div class="intro-meta">Wisuda · UNIMED 2026</div>
+    </div>
+    <button type="button" class="intro-skip">Lewati</button>
+  </div>
+  <div class="app-shell" id="appShell" data-mode="perspective" data-mood="0">
+    <!-- Living Studio Gallery Backdrop (GPU-Only Lightweight Animated Atmosphere) -->
+    <div class="studio-backdrop" aria-hidden="true">
+      <div class="studio-grid"></div>
+      <div class="studio-orb studio-orb-1"></div>
+      <div class="studio-orb studio-orb-2"></div>
+      <div class="studio-orb studio-orb-3"></div>
+      <div class="studio-mood-aura" id="studioMoodAura"></div>
+      <div class="studio-horizon"></div>
+      <div class="studio-motes">
+        <span class="mote m1"></span>
+        <span class="mote m2"></span>
+        <span class="mote m3"></span>
+        <span class="mote m4"></span>
+        <span class="mote m5"></span>
+        <span class="mote m6"></span>
+      </div>
+    </div>
+
+    <!-- Whisper-Quiet Top Bar -->
+    <header class="top-bar">
+      <div class="brand-mark">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span class="brand-title">YULIS<em>Feed</em></span>
+      </div>
+
+      <div class="top-status">
+        <span class="slide-counter" id="slideCounter" aria-live="polite">01 / 16</span>
+        <button
+          type="button"
+          class="icon-pill replay-btn"
+          id="replayBtn"
+          title="Putar ulang animasi masuk"
+          aria-label="Putar ulang animasi masuk"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+            <path d="M3 3v5h5" />
+          </svg>
+          <span class="btn-label">Replay</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Interactive 3D Stage -->
+    <main class="stage-wrapper" id="stageWrapper" aria-label="Galeri postingan Instagram interaktif">
+      <div class="carousel-stage" id="carouselStage" role="region" aria-roledescription="carousel" aria-label="Postingan Instagram">
+
+        <!-- Layer 1: iPhone 18 Pro Max Back Chassis & Floor Reflection -->
+        <div class="phone-layer phone-back" id="phoneBack" aria-hidden="true">
+          <div class="phone-body-shadow"></div>
+          <div class="phone-backplate"></div>
+          <div class="phone-reflection">
+            <div class="phone-reflection-shape">
+              <div class="reflection-nav-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Layer 2: Isolated 3D Perspective Wing Cards Track -->
+        <div class="cards-viewport" id="cardsViewport">
+          <div class="cards-track" id="cardsTrack"></div>
+        </div>
+
+        <!-- Layer 3: iPhone 18 Pro Max Ultra-Thin Titanium Bezel + Dynamic Island (Locked Immovable Layer) -->
+        <div class="phone-layer phone-front" id="phoneFront" aria-hidden="true">
+          <!-- Titanium Side Controls: Action, Volume, Power, Camera Control -->
+          <span class="hw-btn hw-action"></span>
+          <span class="hw-btn hw-vol-up"></span>
+          <span class="hw-btn hw-vol-down"></span>
+          <span class="hw-btn hw-power"></span>
+          <span class="hw-btn hw-camera-ctrl"></span>
+
+          <div class="phone-bezel">
+            <div class="phone-screen-chrome">
+              <!-- Click-outside Scrim for Expanded Dynamic Island -->
+              <div class="di-scrim" id="diScrim" aria-hidden="true"></div>
+
+              <!-- Interactive iPhone Dynamic Island Music Player -->
+              <div
+                class="dynamic-island-shell"
+                id="dynamicIsland"
+                role="region"
+                aria-label="Dynamic Island Pemutar Musik"
+                aria-expanded="false"
+              >
+                <!-- Compact Pill View -->
+                <button
+                  type="button"
+                  class="di-compact"
+                  id="diCompactBtn"
+                  aria-label="Buka pemutar musik Dynamic Island"
+                  title="Buka Pemutar Musik"
+                >
+                  <span class="di-mini-art" id="diMiniArt" aria-hidden="true"></span>
+                  <span class="di-idle-hardware" aria-hidden="true">
+                    <span class="di-idle-note">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3h-6Z"/></svg>
+                    </span>
+                    <span class="island-sensor"></span>
+                    <span class="island-camera"></span>
+                  </span>
+                  <span class="di-mini-eq" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span>
+                  </span>
+                </button>
+
+                <!-- Expanded iOS Music Player View -->
+                <div class="di-expanded" id="diExpanded" aria-hidden="true">
+                  <div class="di-glow" id="diGlow" aria-hidden="true"></div>
+
+                  <div class="di-header">
+                    <div class="di-cover" id="diCover"></div>
+                    <div class="di-meta">
+                      <div class="di-title" id="diTitle">Sweet Heat Lightning</div>
+                      <div class="di-artist" id="diArtist">Gregory Alan Isakov</div>
+                    </div>
+                    <div class="di-live-eq" aria-hidden="true">
+                      <span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                  </div>
+
+                  <div class="di-progress-row">
+                    <span class="di-time" id="diTimeCur">0:00</span>
+                    <div
+                      class="di-progress-bar"
+                      id="diProgressBar"
+                      role="slider"
+                      tabindex="0"
+                      aria-label="Progres lagu"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-valuenow="0"
+                    >
+                      <div class="di-progress-track">
+                        <div class="di-progress-fill" id="diProgressFill"></div>
+                      </div>
+                    </div>
+                    <span class="di-time" id="diTimeRem">-0:00</span>
+                  </div>
+
+                  <div class="di-controls">
+                    <button
+                      type="button"
+                      class="di-ctrl-btn di-list-btn"
+                      id="diListBtn"
+                      aria-label="Daftar lagu"
+                      aria-expanded="false"
+                      title="Daftar Lagu"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M4 6h16M4 12h16M4 18h10"/>
+                      </svg>
+                    </button>
+
+                    <div class="di-transport">
+                      <button type="button" class="di-ctrl-btn" id="diPrevBtn" aria-label="Lagu sebelumnya">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+                      </button>
+                      <button type="button" class="di-ctrl-btn di-play-btn" id="diPlayBtn" aria-label="Putar atau jeda">
+                        <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l11-6.86a1 1 0 0 0 0-1.7l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg>
+                        <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1.2"/><rect x="14" y="5" width="4" height="14" rx="1.2"/></svg>
+                      </button>
+                      <button type="button" class="di-ctrl-btn" id="diNextBtn" aria-label="Lagu berikutnya">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      class="di-ctrl-btn di-mute-btn"
+                      id="diMuteBtn"
+                      aria-label="Bisukan suara"
+                      title="Suara"
+                    >
+                      <svg class="icon-vol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                      </svg>
+                      <svg class="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="m22 9-6 6M16 9l6 6"/>
+                      </svg>
+                    </button>
+                  </div>
+
+                  <!-- 5-Track Playlist Drawer -->
+                  <div class="di-playlist" id="diPlaylist" aria-hidden="true"></div>
+                </div>
+              </div>
+
+              <!-- Top Section: Status Bar + Dynamic Island Spacer + Stories Tray -->
+              <div class="phone-top-zone">
+                <div class="phone-status-row">
+                  <span class="status-time">9:41</span>
+                  <span class="dynamic-island-spacer" aria-hidden="true"></span>
+                  <span class="status-icons">
+                    <svg class="st-signal" viewBox="0 0 14 10" fill="currentColor">
+                      <rect x="0.5" y="6.5" width="2" height="3.2" rx="0.6" />
+                      <rect x="3.8" y="4.8" width="2" height="4.9" rx="0.6" />
+                      <rect x="7.1" y="2.8" width="2" height="6.9" rx="0.6" />
+                      <rect x="10.4" y="0.8" width="2" height="8.9" rx="0.6" />
+                    </svg>
+                    <span class="st-battery"><span class="st-battery-fill"></span></span>
+                  </span>
+                </div>
+
+                <div class="stories-bar" id="storiesBar">
+                  <button type="button" class="story-item story-own" data-story="0" tabindex="-1" aria-label="Story Anda">
+                    <span class="story-ring">
+                      <span class="story-avatar story-av-0"></span>
+                    </span>
+                    <span class="story-plus">+</span>
+                  </button>
+                  <button type="button" class="story-item" data-story="1" tabindex="-1" aria-label="Story 1">
+                    <span class="story-ring active-ring">
+                      <span class="story-avatar story-av-1"></span>
+                    </span>
+                  </button>
+                  <button type="button" class="story-item" data-story="2" tabindex="-1" aria-label="Story 2">
+                    <span class="story-ring active-ring">
+                      <span class="story-avatar story-av-2"></span>
+                    </span>
+                  </button>
+                  <button type="button" class="story-item" data-story="3" tabindex="-1" aria-label="Story 3">
+                    <span class="story-ring active-ring">
+                      <span class="story-avatar story-av-3"></span>
+                    </span>
+                  </button>
+                  <button type="button" class="story-item" data-story="4" tabindex="-1" aria-label="Story 4">
+                    <span class="story-ring active-ring">
+                      <span class="story-avatar story-av-4"></span>
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Transparent Middle Window where Active Post Card Lives -->
+              <div class="phone-card-window"></div>
+
+              <!-- Bottom Section: Caption Preview + Instagram Bottom Nav Bar -->
+              <div class="phone-bottom-zone">
+                <div class="phone-caption-preview" id="phoneCaptionPreview">
+                  <span class="caption-line caption-line-primary" id="activeCaptionAuthor">Yulie Aisyah Binrany, S.Pd</span>
+                  <span class="caption-line caption-line-secondary" id="activeCaptionText">Ephemeral studio study in light and grain.</span>
+                </div>
+
+                <div class="ig-bottom-nav">
+                  <span class="ig-nav-icon is-active">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.3 3.6 10a1 1 0 0 0-.38.78V20a1 1 0 0 0 1 1h5.2a.8.8 0 0 0 .8-.8v-5.1h3.56v5.1a.8.8 0 0 0 .8.8h5.2a1 1 0 0 0 1-1v-9.22a1 1 0 0 0-.38-.78L12 3.3Z"/></svg>
+                  </span>
+                  <span class="ig-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-3.8-3.8"/></svg>
+                  </span>
+                  <span class="ig-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M12 8v8M8 12h8"/></svg>
+                  </span>
+                  <span class="ig-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5s-7.5-4.8-9.2-9.2C1.6 8.2 3.7 5 6.9 5c1.9 0 3.5 1 4.4 2.4h1.4C13.6 6 15.2 5 17.1 5c3.2 0 5.3 3.2 4.1 6.3-1.7 4.4-9.2 9.2-9.2 9.2Z"/></svg>
+                  </span>
+                  <span class="ig-nav-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5.5 19.5c1.2-3 3.6-4.5 6.5-4.5s5.3 1.5 6.5 4.5"/></svg>
+                  </span>
+                </div>
+                <div class="phone-home-indicator"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Soft Studio Edge Fade Curtains -->
+        <div class="edge-fade edge-fade-left" aria-hidden="true"></div>
+        <div class="edge-fade edge-fade-right" aria-hidden="true"></div>
+      </div>
+
+      <!-- Desktop Floating Edge Nav Arrows -->
+      <button type="button" class="stage-arrow stage-arrow-prev" id="prevBtn" aria-label="Postingan sebelumnya">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+      </button>
+      <button type="button" class="stage-arrow stage-arrow-next" id="nextBtn" aria-label="Postingan berikutnya">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </button>
+    </main>
+
+    <!-- Ergonomic Bottom Control Dock -->
+    <footer class="control-dock">
+      <div class="dock-inner">
+        <button type="button" class="dock-nav-btn mobile-only" id="mobilePrevBtn" aria-label="Geser ke kiri">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </button>
+
+        <div class="mode-switch" role="tablist" aria-label="Mode tampilan galeri">
+          <span class="mode-indicator" id="modeIndicator" aria-hidden="true"></span>
+          <button type="button" class="mode-btn is-active" id="modePerspective" role="tab" aria-selected="true" data-view="perspective">
+            3D Wing
+          </button>
+          <button type="button" class="mode-btn" id="modeFlat" role="tab" aria-selected="false" data-view="flat">
+            Flat View
+          </button>
+        </div>
+
+        <div class="dock-dots" id="dockDots" role="tablist" aria-label="Pilih postingan"></div>
+
+        <button type="button" class="dock-nav-btn mobile-only" id="mobileNextBtn" aria-label="Geser ke kanan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+
+      <p class="gesture-hint" id="gestureHint">Geser kiri / kanan · Klik foto untuk efek kolase editorial</p>
+    </footer>
+  </div>
+
+  <!-- =========================================================================
+       Editorial Collage Takeover Modal (KARINA Halftone Glitch + Multi-Direction Collage)
+       ========================================================================= -->
+  <div class="editorial-modal" id="editorialModal" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Tampilan poster editorial">
+    <div class="editorial-backdrop" id="editorialBackdrop"></div>
+
+    <div class="editorial-toolbar">
+      <span class="editorial-badge" id="editorialBadge">ISSUE 01 / 16</span>
+      <button type="button" class="editorial-close-btn" id="editorialCloseBtn" aria-label="Tutup tampilan foto">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+        <span>Tutup</span>
+      </button>
+    </div>
+
+    <div class="editorial-stage-slot" id="editorialStageSlot">
+      <div class="editorial-poster" id="editorialPoster">
+        <div class="poster-face-stage" id="posterFaceStage">
+          <img class="face-original" id="faceOriginalImg" alt="Foto asli" />
+          <canvas class="face-halftone-canvas" id="faceHalftoneCanvas" aria-hidden="true"></canvas>
+          <div class="face-blush-patch" id="faceBlushPatch" aria-hidden="true"></div>
+          <svg class="face-ink-contours" id="faceInkContours" viewBox="0 0 400 500" preserveAspectRatio="none" aria-hidden="true"></svg>
+          <div class="face-glitch-layer glitch-r" id="glitchLayerR" aria-hidden="true"></div>
+          <div class="face-glitch-layer glitch-c" id="glitchLayerC" aria-hidden="true"></div>
+          <div class="face-glitch-scanlines" aria-hidden="true"></div>
+        </div>
+
+        <div class="poster-collage-layer" id="posterCollageLayer"></div>
+      </div>
+    </div>
+
+    <p class="editorial-exit-hint">Klik di luar foto atau tekan <kbd>ESC</kbd> untuk kembali</p>
+  </div>
+
+  <script src="assets-data.js"></script>
+  <script src="intro.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
